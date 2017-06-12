@@ -4,17 +4,17 @@ namespace PortalsPE;
 
 use pocketmine\scheduler\PluginTask;
 
-class PortalTask extends PluginTask{
-    
+class PortalTask extends PluginTask {
+
     private $plugin;
-    
-    public function __construct(Main $plugin){
+
+    public function __construct(Main $plugin) {
         parent::__construct($plugin);
         $this->plugin = $plugin;
     }
 
-    public function onRun($currentTick){
-        foreach($this->plugin->getServer()->getOnlinePlayers() as $p){
+    public function onRun($currentTick) {
+        foreach($this->plugin->getServer()->getOnlinePlayers() as $p) {
             $this->plugin->isInPortal($p);
         }
     }

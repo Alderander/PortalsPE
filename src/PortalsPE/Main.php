@@ -10,7 +10,7 @@ use pocketmine\Player;
 use pocketmine\plugin\MethodEventExecutor;
 use pocketmine\plugin\PluginBase;
 
-class Main extends PluginBase{
+class Main extends PluginBase {
 
     public $sel1 = [];
     public $sel2 = [];
@@ -18,46 +18,46 @@ class Main extends PluginBase{
     public $pos2 = [];
     public $portals;
 
-    public function onEnable(){
+    public function onEnable() {
         $this->saveDefaultConfig();
-        if(!file_exists($this->getDataFolder()."portals.yml")){
-            yaml_emit_file($this->getDataFolder()."portals.yml", []);
+        if(!file_exists($this->getDataFolder() . "portals.yml")) {
+            yaml_emit_file($this->getDataFolder() . "portals.yml", []);
         }
-        $this->portals = yaml_parse_file($this->getDataFolder()."portals.yml");
+        $this->portals = yaml_parse_file($this->getDataFolder() . "portals.yml");
         $this->getServer()->getPluginManager()->registerEvent("pocketmine\\event\\block\\BlockBreakEvent", $listener = new EventListener($this), EventPriority::HIGHEST, new MethodEventExecutor("onBreak"), $this, true);
         $this->getServer()->getPluginManager()->registerEvent("pocketmine\\event\\block\\BlockPlaceEvent", $listener, EventPriority::HIGHEST, new MethodEventExecutor("onPlace"), $this, true);
-        if($this->getConfig()->get("movement-detection") === "event"){
+        if($this->getConfig()->get("movement-detection") === "event") {
             $this->getServer()->getPluginManager()->registerEvent("pocketmine\\event\\player\\PlayerMoveEvent", $listener, EventPriority::MONITOR, new MethodEventExecutor("onMove"), $this, true);
-        }elseif($this->getConfig()->get("movement-detection") === "task"){
+        } elseif($this->getConfig()->get("movement-detection") === "task") {
             $this->getServer()->getScheduler()->scheduleRepeatingTask(new PortalTask($this), 20 * $this->getConfig()->get("task-time"));
-        }else{
+        } else {
             $this->getLogger()->alert("Unknown movement-detection field. Please use event or task");
             $this->getServer()->getPluginManager()->disablePlugin($this);
         }
     }
 
-    public function onDisable(){
-        yaml_emit_file($this->getDataFolder()."portals.yml", $this->portals);
+    public function onDisable() {
+        yaml_emit_file($this->getDataFolder() . "portals.yml", $this->portals);
     }
 
-    public function isInPortal(Player $player){
+    public function isInPortal(Player $player) {
         $x = round($player->x);
         $y = round($player->y);
         $z = round($player->z);
-        foreach($this->portals as $name => $portal){
-            if(($x >= $portal["x"] and $x <= $portal["x2"]) and ($y >= $portal["y"] and $y <= $portal["y2"]) and ($z >= $portal["z"] and $z <= $portal["z2"]) and $player->getLevel()->getFolderName() === $portal["level"]){
-                if($this->getConfig()->get("permission-mode") === true and !$player->hasPermission("portal.".$name)){
+        foreach($this->portals as $name => $portal) {
+            if(($x >= $portal["x"] and $x <= $portal["x2"]) and ($y >= $portal["y"] and $y <= $portal["y2"]) and ($z >= $portal["z"] and $z <= $portal["z2"]) and $player->getLevel()->getFolderName() === $portal["level"]) {
+                if($this->getConfig()->get("permission-mode") === true and !$player->hasPermission("portal." . $name)) {
                     $player->sendMessage($this->getConfig()->get("message-no-perm"));
                     return false;
                 }
-                if(!$this->getServer()->isLevelGenerated($portal["dlevel"])){
+                if(!$this->getServer()->isLevelGenerated($portal["dlevel"])) {
                     $player->sendMessage($this->getConfig()->get("message-error"));
                     return false;
                 }
-                if(!$this->getServer()->isLevelLoaded($portal["dlevel"])){
-                    if($this->getConfig()->get("auto-load") === true){
+                if(!$this->getServer()->isLevelLoaded($portal["dlevel"])) {
+                    if($this->getConfig()->get("auto-load") === true) {
                         $this->getServer()->loadLevel($portal["dlevel"]);
-                    }else{
+                    } else {
                         $player->sendMessage($this->getConfig()->get("message-error"));
                         return false;
                     }
@@ -70,19 +70,19 @@ class Main extends PluginBase{
         return false;
     }
 
-    public function onCommand(CommandSender $sender, Command $command, $label, array $args){
-        if(strtolower($command->getName()) === "portal"){
-            if(!isset($args[0])){
+    public function onCommand(CommandSender $sender, Command $command, $label, array $args) {
+        if(strtolower($command->getName()) === "portal") {
+            if(!isset($args[0])) {
                 return false;
             }
             $subCommand = array_shift($args);
-            switch($subCommand){
+            switch($subCommand) {
                 case "pos1":
-                    if(!($sender instanceof Player)){
+                    if(!($sender instanceof Player)) {
                         $sender->sendMessage("Run this command in game");
                         return true;
                     }
-                    if(!$sender->hasPermission("portalspe.admin")){
+                    if(!$sender->hasPermission("portalspe.admin")) {
                         $sender->sendMessage("You don't have permission to use this command");
                         return true;
                     }
@@ -90,11 +90,11 @@ class Main extends PluginBase{
                     $sender->sendMessage("Please place or break the first position");
                     return true;
                 case "pos2":
-                    if(!($sender instanceof Player)){
+                    if(!($sender instanceof Player)) {
                         $sender->sendMessage("Run this command in game");
                         return true;
                     }
-                    if(!$sender->hasPermission("portalspe.admin")){
+                    if(!$sender->hasPermission("portalspe.admin")) {
                         $sender->sendMessage("You don't have permission to use this command");
                         return true;
                     }
@@ -102,27 +102,27 @@ class Main extends PluginBase{
                     $sender->sendMessage("Please place or break the second position");
                     return true;
                 case "create":
-                    if(!($sender instanceof Player)){
+                    if(!($sender instanceof Player)) {
                         $sender->sendMessage("Run this command in game");
                         return true;
                     }
-                    if(!$sender->hasPermission("portalspe.admin")){
+                    if(!$sender->hasPermission("portalspe.admin")) {
                         $sender->sendMessage("You don't have permission to use this command");
                         return true;
                     }
-                    if(!isset($this->pos1[$sender->getName()]) or !isset($this->pos2[$sender->getName()])){
+                    if(!isset($this->pos1[$sender->getName()]) or !isset($this->pos2[$sender->getName()])) {
                         $sender->sendMessage("Please select both positions first");
                         return true;
                     }
-                    if(!isset($args[0])){
+                    if(!isset($args[0])) {
                         $sender->sendMessage("Please specify the portal name");
                         return true;
                     }
-                    if($this->pos1[$sender->getName()][3] !== $this->pos2[$sender->getName()][3]){
+                    if($this->pos1[$sender->getName()][3] !== $this->pos2[$sender->getName()][3]) {
                         $sender->sendMessage("Positions are in different levels");
                         return true;
                     }
-                    if(isset($this->portals[strtolower($args[0])])){
+                    if(isset($this->portals[strtolower($args[0])])) {
                         $sender->sendMessage("A portal with that name already exists");
                         return true;
                     }
@@ -136,60 +136,60 @@ class Main extends PluginBase{
                         "level" => $this->pos1[$sender->getName()][3],
                         "dx" => $sender->x, "dy" => $sender->y, "dz" => $sender->z, "dlevel" => $sender->getLevel()->getFolderName()
                     ];
-                    yaml_emit_file($this->getDataFolder()."portals.yml", $this->portals);
+                    yaml_emit_file($this->getDataFolder() . "portals.yml", $this->portals);
                     $sender->sendMessage("Portal created");
                     unset($this->pos1[$sender->getName()]);
                     unset($this->pos2[$sender->getName()]);
                     return true;
                 case "list":
-                    if(!$sender->hasPermission("portalspe.admin")){
+                    if(!$sender->hasPermission("portalspe.admin")) {
                         $sender->sendMessage("You don't have permission to use this command");
                         return true;
                     }
-                    $sender->sendMessage("Portals: ".implode(", ", array_keys($this->portals)));
+                    $sender->sendMessage("Portals: " . implode(", ", array_keys($this->portals)));
                     return true;
                 case "delete":
-                    if(!$sender->hasPermission("portalspe.admin")){
+                    if(!$sender->hasPermission("portalspe.admin")) {
                         $sender->sendMessage("You don't have permission to use this command");
                         return true;
                     }
-                    if(!isset($this->portals[strtolower($args[0])])){
+                    if(!isset($this->portals[strtolower($args[0])])) {
                         $sender->sendMessage("A portal with that name does not exist");
                         return true;
                     }
                     unset($this->portals[strtolower($args[0])]);
-                    yaml_emit_file($this->getDataFolder()."portals.yml", $this->portals);
+                    yaml_emit_file($this->getDataFolder() . "portals.yml", $this->portals);
                     $sender->sendMessage("You have deleted the portal");
                     return true;
                 case "fill":
-                    if(!$sender->hasPermission("portalspe.admin")){
+                    if(!$sender->hasPermission("portalspe.admin")) {
                         $sender->sendMessage("You don't have permission to use this command");
                         return true;
                     }
-                    if(!isset($args[0])){
+                    if(!isset($args[0])) {
                         $sender->sendMessage("Please specify the portal name");
                         return true;
                     }
-                    if(!isset($args[1])){
+                    if(!isset($args[1])) {
                         $sender->sendMessage("Please specify the block id");
                         return true;
                     }
                     $name = strtolower($args[0]);
-                    if(!isset($this->portals[$name])){
+                    if(!isset($this->portals[$name])) {
                         $sender->sendMessage("A portal with that name does not exist");
                         return true;
                     }
                     $level = $this->getServer()->getLevelByName($this->portals[$name]["level"]);
-                    if($level === null){
+                    if($level === null) {
                         $sender->sendMessage("This portal is in a world that is not loaded");
                         return true;
                     }
-                    for($x = $this->portals[$name]["x"]; $x <= $this->portals[$name]["x2"]; $x++){
-                        for($y = $this->portals[$name]["y"]; $y <= $this->portals[$name]["y2"]; $y++){
-                            for($z = $this->portals[$name]["z"]; $z <= $this->portals[$name]["z2"]; $z++){
-                                if($level->getBlockIdAt($x, $y, $z) === 0){
+                    for($x = $this->portals[$name]["x"]; $x <= $this->portals[$name]["x2"]; $x++) {
+                        for($y = $this->portals[$name]["y"]; $y <= $this->portals[$name]["y2"]; $y++) {
+                            for($z = $this->portals[$name]["z"]; $z <= $this->portals[$name]["z2"]; $z++) {
+                                if($level->getBlockIdAt($x, $y, $z) === 0) {
                                     $level->setBlockIdAt($x, $y, $z, $args[1]);
-                                    if(isset($args[2])){
+                                    if(isset($args[2])) {
                                         $level->setBlockDataAt($x, $y, $z, $args[2]);
                                     }
                                 }
@@ -199,7 +199,7 @@ class Main extends PluginBase{
                     $sender->sendMessage("Portal filled");
                     return true;
                 default:
-                    $sender->sendMessage("Strange argument ".$subCommand.".");
+                    $sender->sendMessage("Strange argument " . $subCommand . ".");
                     $sender->sendMessage($command->getUsage());
                     return true;
             }
