@@ -41,6 +41,7 @@ class Main extends PluginBase {
     }
 
     public function isInPortal(Player $player) {
+        if (!$player->isValid()) return;
         $x = round($player->x);
         $y = round($player->y);
         $z = round($player->z);
@@ -62,7 +63,8 @@ class Main extends PluginBase {
                         return false;
                     }
                 }
-                $player->teleport(new Position($portal["dx"], $portal["dy"], $portal["dz"], $this->getServer()->getLevelByName($portal["dlevel"])));
+                $toPos = new Position((int) $portal["dx"], (int) $portal["dy"], (int) $portal["dz"], $this->getServer()->getLevelByName($portal["dlevel"]));
+                $player->teleport($toPos);
                 $player->sendMessage($this->getConfig()->get("message-tp"));
                 return true;
             }
@@ -70,7 +72,7 @@ class Main extends PluginBase {
         return false;
     }
 
-    public function onCommand(CommandSender $sender, Command $command, $label, array $args) {
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool {
         if(strtolower($command->getName()) === "portal") {
             if(!isset($args[0])) {
                 return false;
