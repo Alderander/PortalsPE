@@ -1,7 +1,7 @@
 name: PortalsPE
 main: PortalsPE\Main
-api: [3.0.0-ALPHA7]
-version: 1.0.0
+api: [3.0.0-ALPHA7, 3.0.0-ALPHA8, 3.0.0-ALPHA9, 3.0.0-ALPHA10]
+version: 1.0.1-1
 author: luca28pet
 description: A portals plugin
 commands:
